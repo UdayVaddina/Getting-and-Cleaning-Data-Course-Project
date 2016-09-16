@@ -14,4 +14,5 @@ if (!file.exists('./data/UCI HAR Dataset.zip')){
 }
 
 
-# unzip dataset 
+# unzip dataset into the folder data
+unzip(zipfile="./data/Dataset.zip",exdir="./data")
