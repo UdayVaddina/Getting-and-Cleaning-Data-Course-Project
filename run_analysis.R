@@ -7,7 +7,11 @@ rm(list = ls(all = TRUE))
 
 library(data.table)
 fileurl='https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip'
-if (!file.exists('./UCI HAR Dataset.zip')){
-  download.file(fileurl, './UCI HAR Dataset.zip', mode = 'wb')
+if (!file.exists('./data/UCI HAR Dataset.zip')){
+  dir.create("./data")
+  download.file(fileurl, './data/UCI HAR Dataset.zip', mode = 'wb')
 
 }
+
+
+# unzip dataset 
