@@ -1,16 +1,11 @@
-
 rm(list = ls(all = TRUE))
 
 # Download the dataset
-
-
 fileurl='https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip'
 if (!file.exists('./data/UCI HAR Dataset.zip')){
   dir.create("./data")
   download.file(fileurl, './data/UCI HAR Dataset.zip', mode = 'wb')
-
 }
-
 
 # unzip dataset into the folder data
 unzip(zipfile="./data/UCI HAR Dataset.zip",exdir="./data")
@@ -19,7 +14,6 @@ unzip(zipfile="./data/UCI HAR Dataset.zip",exdir="./data")
 x_test <- read.table("./data/UCI HAR Dataset/test/X_test.txt")
 y_test <- read.table("./data/UCI HAR Dataset/test/y_test.txt")
 subject_test <- read.table("./data/UCI HAR Dataset/test/subject_test.txt")
-
 
 # Reading train tables
 x_train <- read.table("./data/UCI HAR Dataset/train/X_train.txt")
@@ -31,7 +25,6 @@ activity_labels <- read.table("./data/UCI HAR Dataset/activity_labels.txt")
 
 #Reading feature vector
 features <- read.table("./data/UCI HAR Dataset/features.txt")
-
 
 # Assigning Column names for test tables
 colnames(x_test) <- features[,2]
@@ -46,14 +39,12 @@ colnames(subject_train) <- "subjectID"
 # Assigning Column names for activity_labels
 colnames(activity_labels) <- c("activityID", "activityType")
 
-
 # Merging training and test sets to create one datset
 merge_test <- cbind(y_test, subject_test, x_test)
 merge_train <- cbind(y_train, subject_train, x_train)
 allMerged <- rbind(merge_test, merge_train)
 
 # Extracting only the measurements on the mean and standard deviation for each measurement
-
 # Creating a vector to define ID, mean and standard deviation 
 
 allColNames <- colnames(allMerged)
@@ -69,15 +60,17 @@ subsetFromMerged <- allMerged[ , mean_stdDev == TRUE]
 # Naming the activities with some descriptive variable names
 descriptiveActivityNames <- merge(subsetFromMerged, activity_labels, by='activityID', all.x=TRUE)
 
+# Appropriately labels the data set with descriptive variable names
+names(descriptiveActivityNames)<-gsub("^t", "time", names(descriptiveActivityNames))
+names(descriptiveActivityNames)<-gsub("^f", "frequency", names(descriptiveActivityNames))
+names(descriptiveActivityNames)<-gsub("Acc", "Accelerometer", names(descriptiveActivityNames))
+names(descriptiveActivityNames)<-gsub("BodyBody", "Body", names(descriptiveActivityNames))
+names(descriptiveActivityNames)<-gsub("Gyro", "Gyroscope", names(descriptiveActivityNames))
+names(descriptiveActivityNames)<-gsub("Mag", "Magnitude", names(descriptiveActivityNames))
 
 # Creating a new independent tidy set with avg of each variable for each activity and subject
-indTidySet <- aggregate(. ~subjectID + activityID, descriptiveActivityNames, mean)
+indTidySet <- aggregate(. ~subjectID + activityType,  descriptiveActivityNames, mean)
 indTidySet <- indTidySet[order(indTidySet$subjectID, indTidySet$activityID),]
-
 
 #Writing the above created independent dataset into a file
 write.table(indTidySet, "independentTidySet.txt", row.name=FALSE)
-
-
-
-
